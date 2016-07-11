@@ -1,5 +1,6 @@
 from flask import Flask, render_template, send_from_directory, request
 import os
+import json
 
 app = Flask(__name__)
 
@@ -11,10 +12,11 @@ def index():
 # def images():
 #     return send_from_directory('static/img', "main.jpg")
 #
-# @app.route('/data', methods=['POST'])
-# def py_file():
-#     filedata = request.files['file']
-#     return write_img(filedata)
+@app.route('/testRoute', methods=['POST'])
+def test():
+    data = json.loads(request.data.decode())
+    testData = data['testData']
+    return testData
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

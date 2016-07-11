@@ -1,17 +1,24 @@
 var app = angular.module('SpoilerBlockerWebsite', []);
 
+app.config(function($interpolateProvider) {
+  $interpolateProvider.startSymbol('[[');
+  $interpolateProvider.endSymbol(']]');
+});
+
 app.controller('MainController', function($scope, $http) {
-	// $scope.scrapePic = function() {
-	// 	$http({
-	// 		method: 'POST',
- // 			url: '/data',
- // 			data: fd,
-	// 		headers: {'Content-Type': undefined},
-	//     transformRequest: angular.identity
-	// 	}).then(function(data) {
-	// 		$scope.flag = true;
-	// 		$scope.movieData = data;
-	// 		console.log(data);
-	// 	});
-	// };
+	$scope.testVar = null;
+	$scope.testHtml = function() {
+		$http({
+			method: 'POST',
+ 			url: '/testRoute',
+ 			data: {
+				testData: "Bye"
+			},
+			headers: {'Content-Type': 'json'}
+		}).then(function(data) {
+			console.log(data);
+			$scope.testVar = data.data;
+		});
+	};
+	$scope.testHtml();
 });
