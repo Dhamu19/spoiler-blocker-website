@@ -1,6 +1,6 @@
-from flask import Flask, render_template, send_from_directory, request
+from flask import Flask, render_template, request
 from datetime import date
-import flask.ext.login as flask_login
+# import flask.ext.login as flask_login
 import os
 import json
 import psycopg2
