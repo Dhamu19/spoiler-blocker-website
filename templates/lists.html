@@ -2,13 +2,14 @@
   <head>
     <title>Spoiler Blocker Website</title>
     <script type="text/javascript" src="../static/js/jquery-2.1.1.js"></script>
+    <script type="text/javascript" src="../static/js/angular.min.js"></script>
+    <script type="text/javascript" src="../static/js/app.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="../static/css/bootcards-desktop.scss" />
     <link rel="stylesheet" type="text/css" href="../static/css/styles.css" />
-    <link href="https://fonts.googleapis.com/css?family=Galada|Indie+Flower" rel="stylesheet">
   </head>
-  <body>
+  <body ng-app="SpoilerBlockerWebsite" ng-controller="MainController">
     <nav class="navbar navbar-default navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
@@ -36,18 +37,34 @@
       </div>
     </nav>
 
+    <div class="container" ng-repeat="list in lists">
+      <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+          <h1 class="panel-title pull-left">[[ list.title ]]</h1>
+          <span class="badge pull-right" style="margin: 7px 0px">[[ list.num_downloads ]]</span>
+        </div>
 
-    <div class="container splash">
-      <div class="center-text">
-        <h2 class="font-galada">Spoiler Blocker</h2>
-        <br />
-        <br />
-        <br />
-        <div>
-          <ul class="nav nav-pills font-indieflower btn-list">
-            <li><a href="#">Create List</a></li>
-            <li><a href="lists">Browse Lists</a></li>
-          </ul>
+        <div class="list-group">
+          <div class="list-group-item">
+            <label>Tags</label>
+            <h6 class="list-group-item-heading">[[ list.tags ]]</h6>
+          </div>
+        </div>
+
+        <div class="list-group">
+          <div class="list-group-item">
+            <label>Rating</label>
+            <div>
+              <span ng-repeat="a in range(list.rating) track by $index" style="color:gold">&#9733;</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="list-group">
+          <div class="list-group-item">
+            <label>Number of Downloads</label>
+            <h6 class="list-group-item-heading">[[ list.num_downloads ]]</h6>
+          </div>
         </div>
       </div>
     </div>

@@ -6,19 +6,24 @@ app.config(function($interpolateProvider) {
 });
 
 app.controller('MainController', function($scope, $http) {
-	$scope.testVar = null;
-	$scope.testHtml = function() {
+	$scope.lists = [];
+
+	$scope.getLists = function(numLists) {
 		$http({
 			method: 'POST',
- 			url: '/testRoute',
+ 			url: '/getLists',
  			data: {
-				testData: "Bye"
+				numLists: numLists
 			},
 			headers: {'Content-Type': 'json'}
 		}).then(function(data) {
 			console.log(data);
-			$scope.testVar = data.data;
+			$scope.lists = data.data;
 		});
 	};
-	$scope.testHtml();
+	$scope.range = function(n) {
+    return new Array(n);
+  };
+
+	$scope.getLists(10);
 });
