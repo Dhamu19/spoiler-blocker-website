@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from datetime import date
+from datetime import date, datetime
 # import flask.ext.login as flask_login
 import os
 import json
@@ -86,7 +86,12 @@ def listForm():
 @app.route('/createList', methods=['POST'])
 def createList():
     data = json.loads(request.data.decode())
-    
+    cur.execute(
+        'INSERT INTO pending_lists (title, tags, date_added, email) VALUES (%s, %s, %s, %s);',
+        (data['title'], data['tags'], datetime.now(), data['email'])
+    )
+    conn.commit()
+    return json.dumps({'Status': 'Success'})
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

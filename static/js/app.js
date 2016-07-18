@@ -28,3 +28,19 @@ app.controller('BrowseController', function($scope, $http) {
 
 	$scope.getLists(10);
 });
+
+app.controller('CreateController', function($scope, $http) {
+	$scope.createForm = {};
+
+	$scope.submitForm = function () {
+		$http({
+			method: 'POST',
+ 			url: '/createList',
+ 			data: $scope.createForm,
+			headers: {'Content-Type': 'json'}
+		}).then(function(data) {
+			console.log(data);
+		});
+		$scope.createForm = {};
+	}
+})
