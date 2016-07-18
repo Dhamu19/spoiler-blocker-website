@@ -5,7 +5,8 @@ app.config(function($interpolateProvider) {
   $interpolateProvider.endSymbol(']]');
 });
 
-app.controller('MainController', function($scope, $http) {
+app.controller('BrowseController', function($scope, $http) {
+	$scope.Math = window.Math;
 	$scope.lists = [];
 
 	$scope.getLists = function(numLists) {

@@ -43,3 +43,68 @@ body {
    position: absolute;
    color: gold;
 }
+
+.star {
+    /*font-size: x-large;*/
+    width: 14px;
+    display: inline-block;
+    color: gray;
+}
+
+.star:last-child {
+    margin-right: 0;
+}
+
+.star:before {
+    content:'\2605';
+}
+
+.star.on {
+    color: gold;
+}
+
+.star.off:last-child {
+  margin-left: -4px;
+}
+
+.star.half:after {
+    content:'\2605';
+    color: gold;
+    position: absolute;
+    width: attr(data-widthafter);
+    margin-left: -14px;
+    overflow: hidden;
+}
+
+.panel-heading {
+  background-color: #f5f5f5 !important;
+}
+
+.panel-title {
+  margin-top: 7px;
+  font-size: 26px;
+}
+
+.no-hover, .no-hover:focus, .no-hover:focus:active {
+  cursor: default;
+  outline: none;
+}
+
+.btn-warning.no-hover, .btn-warning.no-hover:focus:active {
+  background-color: #f39c12;
+  border-color: #f39c12;
+}
+
+.btn-danger.no-hover, .btn-danger.no-hover:focus:active {
+  background-color: #e74c3c;
+  border-color: #e74c3c;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.display-arrow {
+  margin-top: 15px;
+  margin-left: 10px;
+}

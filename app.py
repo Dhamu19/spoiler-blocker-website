@@ -76,9 +76,17 @@ def lists():
 def getLists():
     data = json.loads(request.data.decode())
     numLists = data['numLists']
-    cur.execute("SELECT * FROM spoiler_lists;")
-    # print cur.fetchone()
+    cur.execute("SELECT * FROM block_lists;")
     return json.dumps(map(dict, cur.fetchall()), cls=DateEncoder)
+
+@app.route('/listForm')
+def listForm():
+    return render_template("create_list.html")
+
+@app.route('/createList', methods=['POST'])
+def createList():
+    data = json.loads(request.data.decode())
+    
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
