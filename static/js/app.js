@@ -6,7 +6,7 @@ app.config(function($interpolateProvider) {
 });
 
 app.controller('BrowseController', function($scope, $http) {
-	$scope.Math = window.Math;
+  // $scope.Math = window.Math;
 	$scope.lists = [];
 
 	$scope.getLists = function(numLists) {
@@ -22,9 +22,9 @@ app.controller('BrowseController', function($scope, $http) {
 			$scope.lists = data.data;
 		});
 	};
-	$scope.range = function(n) {
-    return new Array(n);
-  };
+	// $scope.range = function(n) {
+  //   return new Array(n);
+  // };
 
 	$scope.getLists(10);
 });
