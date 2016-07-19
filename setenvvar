@@ -1,6 +1,0 @@
-#!/bin/sh
-
-APP=$1
-
-export FLASK_APP=$APP
-export DATABASE_URL="postgres://qglwlwirftgvii:99P1BaTggXK_Us7EVvEtcBeG4o@ec2-54-243-203-179.compute-1.amazonaws.com:5432/darp68a2hph39a"
