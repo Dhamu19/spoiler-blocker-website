@@ -5,6 +5,7 @@
     <script type="text/javascript" src="../static/js/angular.min.js"></script>
     <script type="text/javascript" src="../static/js/app.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../static/js/typeahead.js"></script>
     <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="../static/css/styles.css" />
   </head>
@@ -28,7 +29,9 @@
           </ul>
           <form class="navbar-form navbar-right" role="search">
             <div class="form-group">
-              <input type="text" class="form-control" placeholder="Search">
+              <!-- <input type="text" class="form-control" placeholder="Search"> -->
+              <input type="text" class="form-control" placeholder="Search"
+               uib-typeahead="title for title in getTitles($viewValue)" ng-model="asyncSelected">
             </div>
             <button type="submit" class="btn btn-default">Submit</button>
           </form>

@@ -1,26 +1,10 @@
 from flask import Flask, render_template, request
 from datetime import date, datetime
 # import flask.ext.login as flask_login
-import os
 import json
-import psycopg2
-import psycopg2.extras
-import urlparse
+from helper import fullTextSearch, cur, conn
 
 app = Flask(__name__)
-
-# Database connection
-urlparse.uses_netloc.append("postgres")
-url = urlparse.urlparse(os.environ["DATABASE_URL"])
-
-conn = psycopg2.connect(
-    database=url.path[1:],
-    user=url.username,
-    password=url.password,
-    host=url.hostname,
-    port=url.port
-)
-cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 class DateEncoder(json.JSONEncoder):
 
@@ -92,6 +76,11 @@ def createList():
     )
     conn.commit()
     return json.dumps({'Status': 'Success'})
+
+@app.route('/searchLists', methods=['POST'])
+def searchLists():
+    data = json.loads(request.data.decode())
+    return json.dumps(fullTextSearch(data['query']))
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
