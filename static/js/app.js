@@ -8,7 +8,6 @@ app.config(function($interpolateProvider) {
 app.controller('BrowseController', function($scope, $http) {
   // $scope.Math = window.Math;
 	$scope.lists = [];
-  $scope.asyncSelected = undefined;
 
 	$scope.getLists = function(numLists) {
 		$http({
@@ -27,21 +26,6 @@ app.controller('BrowseController', function($scope, $http) {
   //   return new Array(n);
   // };
 
-  $scope.getTitles = function(query) {
-    return $http({
-			method: 'POST',
- 			url: '/searchLists',
- 			data: {
-				query: query
-			},
-			headers: {'Content-Type': 'json'}
-		}).then(function(response) {
-      return response.data.map(function(item) {
-        return item.title;
-      });
-		});
-  }
-
 	$scope.getLists(10);
 });
 
@@ -59,4 +43,23 @@ app.controller('CreateController', function($scope, $http) {
 		});
 		$scope.createForm = {};
 	}
+})
+
+app.controller('NavController', function($scope, $http) {
+  $scope.asyncSelected = undefined;
+
+  $scope.getTitles = function(query) {
+    return $http({
+			method: 'POST',
+ 			url: '/searchLists',
+ 			data: {
+				query: query
+			},
+			headers: {'Content-Type': 'json'}
+		}).then(function(response) {
+      return response.data.map(function(item) {
+        return item.title;
+      });
+		});
+  }
 })

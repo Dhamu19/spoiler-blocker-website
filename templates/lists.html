@@ -9,77 +9,52 @@
     <link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="../static/css/styles.css" />
   </head>
-  <body ng-app="SpoilerBlockerWebsite" ng-controller="BrowseController">
-    <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main_navbar" aria-expanded="false">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand brand-name" href="#">Spoiler Blocker</a>
-        </div>
-        <div class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li id="nav_home"><a href="/">Home</a></li>
-            <li id="nav_home"><a href="#">About</a></li>
-            <li id="nav_home"><a href="#">Contact Us</a></li> <!-- Some rubbish on the nav -->
-          </ul>
-          <form class="navbar-form navbar-right" role="search">
-            <div class="form-group">
-              <!-- <input type="text" class="form-control" placeholder="Search"> -->
-              <input type="text" class="form-control" placeholder="Search"
-               uib-typeahead="title for title in getTitles($viewValue)" ng-model="asyncSelected">
+  <body ng-app="SpoilerBlockerWebsite">
+    <ng-include src="'static/angulartemplates/nav.html'"></ng-include>
+
+    <div ng-controller="BrowseController">
+      <div class="container" ng-repeat="list in lists">
+        <div class="panel panel-default">
+          <div class="panel-heading clearfix">
+            <h3 class="panel-title pull-left">[[ list.title ]]</h3>
+  					<span class="glyphicon display-arrow clickable"
+             ng-class="list.displayTags? 'glyphicon-triangle-bottom' : 'glyphicon-triangle-right'"
+             ng-click="list.displayTags = list.displayTags? false: true"></span>
+            <button class="btn btn-danger pull-right no-hover" type="button">
+              Downloads <span class="badge" style="margin-left: 4px">[[ list.num_downloads ]]</span>
+            </button>
+            <button class="btn btn-warning pull-right no-hover" type="button" style="margin-right:10px">
+              Rating <span class="badge" style="margin-left: 4px">[[ list.rating ]] / 5</span>
+            </button>
+          </div>
+
+          <div class="list-group" ng-if="list.displayTags">
+            <div class="list-group-item">
+              <label>Tags</label>
+              <h6 class="list-group-item-heading">[[ list.tags ]]</h6>
             </div>
-            <button type="submit" class="btn btn-default">Submit</button>
-          </form>
-        </div>
-      </div>
-    </nav>
-
-    <div class="container" ng-repeat="list in lists">
-      <div class="panel panel-default">
-        <div class="panel-heading clearfix">
-          <h3 class="panel-title pull-left">[[ list.title ]]</h3>
-					<span class="glyphicon display-arrow clickable"
-           ng-class="list.displayTags? 'glyphicon-triangle-bottom' : 'glyphicon-triangle-right'"
-           ng-click="list.displayTags = list.displayTags? false: true"></span>
-          <button class="btn btn-danger pull-right no-hover" type="button">
-            Downloads <span class="badge" style="margin-left: 4px">[[ list.num_downloads ]]</span>
-          </button>
-          <button class="btn btn-warning pull-right no-hover" type="button" style="margin-right:10px">
-            Rating <span class="badge" style="margin-left: 4px">[[ list.rating ]] / 5</span>
-          </button>
-        </div>
-
-        <div class="list-group" ng-if="list.displayTags">
-          <div class="list-group-item">
-            <label>Tags</label>
-            <h6 class="list-group-item-heading">[[ list.tags ]]</h6>
           </div>
-        </div>
 
-        <!-- <div class="list-group">
-          <div class="list-group-item">
-            <label>Rating</label>
-            <div class="stars">
-              <span class="star on" ng-repeat="a in range(Math.floor(list.rating)) track by $index"></span>
-              <span class="star half" ng-if="list.rating % 1 != 0" data-widthafter="3"></span>
-              <span class="star half" ng-if="list.rating % 1 != 0" data-widthafter="(list.rating * 14 / 5) + 'px'"></span>
-              <span class="star off" ng-repeat="a in range(5 - Math.ceil(list.rating)) track by $index"></span>
+          <!-- <div class="list-group">
+            <div class="list-group-item">
+              <label>Rating</label>
+              <div class="stars">
+                <span class="star on" ng-repeat="a in range(Math.floor(list.rating)) track by $index"></span>
+                <span class="star half" ng-if="list.rating % 1 != 0" data-widthafter="3"></span>
+                <span class="star half" ng-if="list.rating % 1 != 0" data-widthafter="(list.rating * 14 / 5) + 'px'"></span>
+                <span class="star off" ng-repeat="a in range(5 - Math.ceil(list.rating)) track by $index"></span>
+              </div>
+              <h6 class="list-group-item-heading">[[ list.rating ]] / 5</h6>
             </div>
-            <h6 class="list-group-item-heading">[[ list.rating ]] / 5</h6>
           </div>
-        </div>
 
-        <div class="list-group">
-          <div class="list-group-item">
-            <label>Number of Downloads</label>
-            <h6 class="list-group-item-heading">[[ list.num_downloads ]]</h6>
-          </div>
-        </div> -->
+          <div class="list-group">
+            <div class="list-group-item">
+              <label>Number of Downloads</label>
+              <h6 class="list-group-item-heading">[[ list.num_downloads ]]</h6>
+            </div>
+          </div> -->
+        </div>
       </div>
     </div>
   </body>

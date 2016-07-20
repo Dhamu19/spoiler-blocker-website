@@ -30,9 +30,6 @@ def fullTextSearch(search):
     selectLists(results, 'title', '%' + search + '%')
     selectLists(results, 'tags', '%' + search + '%')
 
-    if len(results) > 10:
-        results = results[:10]
-
     return map(dict, results)
 
 def selectLists(results, column, search):
