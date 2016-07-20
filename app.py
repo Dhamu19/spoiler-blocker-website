@@ -1,8 +1,7 @@
 from flask import Flask, render_template, request
 from datetime import date, datetime
-# import flask.ext.login as flask_login
 import json
-from helper import fullTextSearch, cur, conn
+from helper import fullTextSearch, cur, conn, os
 
 app = Flask(__name__)
 
