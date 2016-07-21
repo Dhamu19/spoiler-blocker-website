@@ -25,21 +25,28 @@ def fullTextSearch(search):
     #      ) AS t1 ORDER BY ts_rank_cd(t1.tsv, plainto_tsquery(%s)) DESC LIMIT 5;",
     #     (search, search)
     # )
-    results = []
-    idSet = set()
-    selectLists(results, idSet, 'title', search + '%')
-    selectLists(results, idSet, 'title', '%' + search + '%')
-    selectLists(results, idSet, 'tags', '%' + search + '%')
+    if search == '':
+        cur.execute("SELECT id, title, tags, rating, num_downloads FROM block_lists;")
+        return map(dict, cur.fetchall())
+    else:
+        results = []
+        idSet = set()
+        searchLists(results, idSet, 'title', search + '%')
+        searchLists(results, idSet, 'title', '%' + search + '%')
+        searchLists(results, idSet, 'tags', '%' + search + '%')
 
     return results
 
-def selectLists(results, idSet, column, search):
-    cur.execute(
-        "SELECT id, title, tags, rating, num_downloads FROM block_lists WHERE (" + column + " ILIKE %s) LIMIT 10",
-        (search,)
-    )
+def searchLists(results, idSet, column, search):
+    selectLists(column, search)
     for result in cur.fetchall():
         resultDict = dict(result)
         if resultDict['id'] not in idSet:
             results.append(resultDict)
             idSet.add(resultDict['id'])
+
+def selectLists(column, search):
+    cur.execute(
+        "SELECT id, title, tags, rating, num_downloads FROM block_lists WHERE (" + column + " ILIKE %s) LIMIT 10",
+        (search,)
+    )

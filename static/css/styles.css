@@ -26,56 +26,6 @@ body {
   width: 168px;
 }
 
-.rating {
-  unicode-bidi: bidi-override;
-  direction: rtl;
-}
-
-.rating > span {
-  display: inline-block;
-  position: relative;
-  width: 1.1em;
-}
-
-.rating > span:hover:before,
-.rating > span:hover ~ span:before {
-   content: "\2605";
-   position: absolute;
-   color: gold;
-}
-
-.star {
-    /*font-size: x-large;*/
-    width: 14px;
-    display: inline-block;
-    color: gray;
-}
-
-.star:last-child {
-    margin-right: 0;
-}
-
-.star:before {
-    content:'\2605';
-}
-
-.star.on {
-    color: gold;
-}
-
-.star.off:last-child {
-  margin-left: -4px;
-}
-
-.star.half:after {
-    content:'\2605';
-    color: gold;
-    position: absolute;
-    width: attr(data-widthafter);
-    margin-left: -14px;
-    overflow: hidden;
-}
-
 .panel-heading {
   background-color: #f5f5f5 !important;
 }
@@ -107,4 +57,8 @@ body {
 .display-arrow {
   margin-top: 15px;
   margin-left: 10px;
+}
+
+.left-space {
+  margin-left: 4px;
 }

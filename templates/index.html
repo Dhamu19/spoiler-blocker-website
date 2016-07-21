@@ -3,6 +3,7 @@
     <title>Spoiler Blocker Website</title>
     <script type="text/javascript" src="../static/js/jquery-2.1.1.js"></script>
     <script type="text/javascript" src="../static/js/angular.min.js"></script>
+    <script type="text/javascript" src="../static/js/angular-route.min.js"></script>
     <script type="text/javascript" src="../static/js/app.js"></script>
     <script type="text/javascript" src="../static/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../static/js/typeahead.js"></script>
@@ -13,19 +14,6 @@
   <body ng-app="SpoilerBlockerWebsite">
     <ng-include src="'static/angulartemplates/nav.html'"></ng-include>
 
-    <div class="container splash">
-      <div class="center-text">
-        <h2 class="font-galada">Spoiler Blocker</h2>
-        <br />
-        <br />
-        <br />
-        <div>
-          <ul class="nav nav-pills font-indieflower btn-list">
-            <li><a href="listForm">Create List</a></li>
-            <li><a href="lists">Browse Lists</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    <ng-view></ng-view>
   </body>
 </html>

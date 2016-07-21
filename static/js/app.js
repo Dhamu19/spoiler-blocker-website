@@ -1,32 +1,89 @@
-var app = angular.module('SpoilerBlockerWebsite', ['ui.bootstrap']);
+var app = angular.module('SpoilerBlockerWebsite', ['ngRoute', 'ui.bootstrap']);
 
 app.config(function($interpolateProvider) {
   $interpolateProvider.startSymbol('[[');
   $interpolateProvider.endSymbol(']]');
 });
 
-app.controller('BrowseController', function($scope, $http) {
-  // $scope.Math = window.Math;
-	$scope.lists = [];
+app.config(function($routeProvider) {
+		$routeProvider
+			.when('/', {
+				templateUrl : '../static/angulartemplates/home.html',
+				controller  : 'HomeController'
+			})
+			.when('/createList', {
+				templateUrl : '../static/angulartemplates/createList.html',
+				controller  : 'CreateController'
+			})
+			.when('/browseLists', {
+				templateUrl : '../static/angulartemplates/lists.html',
+				controller  : 'BrowseController'
+			})
+      // .when('/searchLists', {
+			// 	templateUrl : '../static/angulartemplates/searchLists.html',
+			// 	controller  : 'SearchController'
+			// })
+      .otherwise({
+        redirectTo: '/'
+      });
+});
 
-	$scope.getLists = function(numLists) {
-		$http({
-			method: 'POST',
- 			url: '/getLists',
- 			data: {
-				numLists: numLists
-			},
-			headers: {'Content-Type': 'json'}
-		}).then(function(data) {
-			console.log(data);
-			$scope.lists = data.data;
+app.factory('Lists', function($http){
+  var getLists = function(query){
+     return $http({
+        method: 'POST',
+        url: '/getLists',
+        data: {
+          query: query
+        },
+        headers: {'Content-Type': 'json'}
+    })
+  }
+  return {
+    query: '',
+    getLists: getLists
+  };
+});
+
+app.controller('HomeController', function($rootScope, $scope, Lists) {
+  $scope.emptyQuery = function() {
+    Lists.query = '';
+  }
+})
+
+app.controller('BrowseController', function($scope, $http, Lists) {
+  $scope.lists = [];
+
+  $scope.getLists = function(query) {
+    Lists.getLists(query).then(function(response) {
+      $scope.lists = response.data;
 		});
 	};
-	// $scope.range = function(n) {
-  //   return new Array(n);
-  // };
 
-	$scope.getLists(10);
+  $scope.$watch(function () { return Lists.query; }, function (newValue, oldValue) {
+    if (newValue) {
+      $scope.getLists(Lists.query);
+    }
+  });
+
+  $scope.getLists(Lists.query);
+
+	// $scope.getLists = function(query){
+	// 	$http({
+	// 		method: 'POST',
+ // 			url: '/getLists',
+ // 			data: {
+	// 			query: query
+	// 		},
+	// 		headers: {'Content-Type': 'json'}
+	// 	}).then(function(response) {
+	// 		$scope.lists = response.data;
+	// 	});
+	// };
+  //
+  // $scope.$on('query', function (event, arg) {
+  //   $scope.getLists(arg);
+  // });
 });
 
 app.controller('CreateController', function($scope, $http) {
@@ -45,18 +102,11 @@ app.controller('CreateController', function($scope, $http) {
 	}
 })
 
-app.controller('NavController', function($scope, $http, $window) {
+app.controller('NavController', function($scope, $http, Lists, $location) {
   $scope.asyncSelected = undefined;
 
   $scope.getTitles = function(query) {
-    return $http({
-			method: 'POST',
- 			url: '/getTitles',
- 			data: {
-				query: query
-			},
-			headers: {'Content-Type': 'json'}
-		}).then(function(response) {
+    return Lists.getLists(query).then(function(response) {
       return response.data.map(function(item) {
         return item.title;
       });
@@ -64,10 +114,10 @@ app.controller('NavController', function($scope, $http, $window) {
   }
 
   $scope.submitSearch = function() {
-    $window.location.href = "/searchLists/query/" + $scope.asyncSelected;
+    if ($location.path() != '/browseLists') {
+      $location.path('/browseLists');
+    }
+    Lists.query = $scope.asyncSelected;
+    $scope.asyncSelected = '';
   }
-})
-
-app.controller('SearchController', function($scope, $http) {
-  
 })
