@@ -19,10 +19,6 @@ app.config(function($routeProvider) {
 				templateUrl : '../static/angulartemplates/lists.html',
 				controller  : 'BrowseController'
 			})
-      // .when('/searchLists', {
-			// 	templateUrl : '../static/angulartemplates/searchLists.html',
-			// 	controller  : 'SearchController'
-			// })
       .otherwise({
         redirectTo: '/'
       });
@@ -67,23 +63,6 @@ app.controller('BrowseController', function($scope, $http, Lists) {
   });
 
   $scope.getLists(Lists.query);
-
-	// $scope.getLists = function(query){
-	// 	$http({
-	// 		method: 'POST',
- // 			url: '/getLists',
- // 			data: {
-	// 			query: query
-	// 		},
-	// 		headers: {'Content-Type': 'json'}
-	// 	}).then(function(response) {
-	// 		$scope.lists = response.data;
-	// 	});
-	// };
-  //
-  // $scope.$on('query', function (event, arg) {
-  //   $scope.getLists(arg);
-  // });
 });
 
 app.controller('CreateController', function($scope, $http) {

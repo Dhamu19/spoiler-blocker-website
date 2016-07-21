@@ -14,11 +14,11 @@ body {
 }
 
 .font-galada {
-  font-family: 'Galada', cursive;
+  font-family: Galada, cursive;
 }
 
 .font-indieflower {
-  font-family: 'Indie Flower', cursive;
+  font-family: IndieFlower, cursive;
   font-size: 25px;
 }
 
@@ -61,4 +61,14 @@ body {
 
 .left-space {
   margin-left: 4px;
+}
+
+@font-face {
+  font-family: Galada;
+  src: url(../fonts/Galada-Regular.ttf);
+}
+
+@font-face {
+  font-family: IndieFlower;
+  src: url(../fonts/IndieFlower.ttf);
 }
