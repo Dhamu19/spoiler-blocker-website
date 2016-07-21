@@ -45,13 +45,13 @@ app.controller('CreateController', function($scope, $http) {
 	}
 })
 
-app.controller('NavController', function($scope, $http) {
+app.controller('NavController', function($scope, $http, $window) {
   $scope.asyncSelected = undefined;
 
   $scope.getTitles = function(query) {
     return $http({
 			method: 'POST',
- 			url: '/searchLists',
+ 			url: '/getTitles',
  			data: {
 				query: query
 			},
@@ -62,4 +62,12 @@ app.controller('NavController', function($scope, $http) {
       });
 		});
   }
+
+  $scope.submitSearch = function() {
+    $window.location.href = "/searchLists/query/" + $scope.asyncSelected;
+  }
+})
+
+app.controller('SearchController', function($scope, $http) {
+  
 })

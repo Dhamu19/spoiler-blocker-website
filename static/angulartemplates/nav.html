@@ -7,7 +7,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand brand-name" href="/">Spoiler Blocker</a>
+      <a class="navbar-brand brand-name" href="/">Spoiler Blocker [[$viewValue]]</a>
     </div>
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
@@ -20,7 +20,7 @@
           <input type="text" class="form-control" placeholder="Search"
            uib-typeahead="title for title in getTitles($viewValue) | limitTo:8" ng-model="asyncSelected">
         </div>
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button type="submit" class="btn btn-default" ng-click="submitSearch()">Submit</button>
       </form>
     </div>
   </div>

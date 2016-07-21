@@ -26,17 +26,20 @@ def fullTextSearch(search):
     #     (search, search)
     # )
     results = []
-    selectLists(results, 'title', search + '%')
-    selectLists(results, 'title', '%' + search + '%')
-    selectLists(results, 'tags', '%' + search + '%')
+    idSet = set()
+    selectLists(results, idSet, 'title', search + '%')
+    selectLists(results, idSet, 'title', '%' + search + '%')
+    selectLists(results, idSet, 'tags', '%' + search + '%')
 
-    return map(dict, results)
+    return results
 
-def selectLists(results, column, search):
+def selectLists(results, idSet, column, search):
     cur.execute(
         "SELECT id, title, tags, rating, num_downloads FROM block_lists WHERE (" + column + " ILIKE %s) LIMIT 10",
         (search,)
     )
     for result in cur.fetchall():
-        if result not in results:
-            results.append(result)
+        resultDict = dict(result)
+        if resultDict['id'] not in idSet:
+            results.append(resultDict)
+            idSet.add(resultDict['id'])

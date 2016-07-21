@@ -76,10 +76,17 @@ def createList():
     conn.commit()
     return json.dumps({'Status': 'Success'})
 
-@app.route('/searchLists', methods=['POST'])
-def searchLists():
+@app.route('/getTitles', methods=['POST'])
+def getTitles():
     data = json.loads(request.data.decode())
     return json.dumps(fullTextSearch(data['query']))
+
+@app.route('/searchLists/', defaults={'query': ''})
+@app.route('/searchLists/query/<string:query>')
+def searchLists(query):
+    print query
+    lists = fullTextSearch(query)
+    return render_template("searchLists.html", injectedLists = lists)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
