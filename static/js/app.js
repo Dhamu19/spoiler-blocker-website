@@ -47,7 +47,8 @@ app.controller('HomeController', function($rootScope, $scope, Lists) {
   }
 })
 
-app.controller('BrowseController', function($scope, $http, Lists) {
+app.controller('BrowseController', function($scope, $http, Lists, $window) {
+  $scope.round = $window.Math.round;
   $scope.lists = [];
 
   $scope.getLists = function(query) {
@@ -55,6 +56,24 @@ app.controller('BrowseController', function($scope, $http, Lists) {
       $scope.lists = response.data;
 		});
 	};
+
+  $scope.rateList = function(listID, rating) {
+    $http({
+      method: 'POST',
+      url: '/rateList',
+      data: {
+       id: listID,
+       rating: rating
+      },
+      headers: {'Content-Type': 'json'}
+    }).then(function(response) {
+      for (var i = 0; i < $scope.lists.length; i++) {
+        if ($scope.lists[i].id == listID) {
+          $scope.lists[i].rating = response.data.newRating
+        }
+      }
+    })
+  }
 
   $scope.$watch(function () { return Lists.query; }, function (newValue, oldValue) {
     if (newValue) {

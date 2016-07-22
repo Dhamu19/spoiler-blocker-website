@@ -1,4 +1,4 @@
-<div class="container" ng-repeat="list in lists">
+<div class="container" ng-repeat="list in lists track by list.id">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
       <h3 class="panel-title pull-left">[[ list.title ]]</h3>
@@ -9,7 +9,8 @@
         Downloads <span class="badge left-space">[[ list.num_downloads ]]</span>
       </button>
       <button class="btn btn-warning pull-right no-hover" type="button" style="margin-right:10px">
-        Rating <span class="badge left-space">[[ list.rating ]] / 5</span>
+        <!-- Rating <span class="badge left-space">[[ list.rating.toFixed(2) ]] / 5</span> -->
+        Rating <span class="badge left-space">[[ round(list.rating * 100) / 100 ]] / 5</span>
       </button>
     </div>
 
@@ -17,6 +18,22 @@
       <div class="list-group-item">
         <label>Tags</label>
         <h6 class="list-group-item-heading">[[ list.tags ]]</h6>
+      </div>
+
+      <div class="list-group-item">
+        <label>Rate It!</label>
+        <div class="rating" style="width: 95px">
+          <span ng-click="rateList(list.id, 5)">☆</span>
+          <span ng-click="rateList(list.id, 4)">☆</span>
+          <span ng-click="rateList(list.id, 3)">☆</span>
+          <span ng-click="rateList(list.id, 2)">☆</span>
+          <span ng-click="rateList(list.id, 1)">☆</span>
+        </div>
+      </div>
+
+      <div class="list-group-item">
+        <label>Download ID</label>
+        <h6 class="list-group-item-heading">Enter this code to download list: <strong>[[ list.id ]]</strong></h6>
       </div>
     </div>
 
