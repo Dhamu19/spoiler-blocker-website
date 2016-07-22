@@ -42,6 +42,7 @@ def downloadList():
     spoilerList = cur.fetchone()
     if spoilerList:
         cur.execute('UPDATE block_lists SET num_downloads=%s WHERE id=%s', (spoilerList['num_downloads'] + 1, listID))
+        conn.commit()
         return json.dumps({'list': dict(spoilerList), 'Status': 'Success'})
     else:
         return json.dumps({'Status': 'Does Not Exist'})
