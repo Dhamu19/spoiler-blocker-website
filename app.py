@@ -11,8 +11,15 @@ def index():
 
 @app.route('/getLists', methods=['POST'])
 def getLists():
+    cookie = json.loads(request.cookies.get('ratings', "{}"))
+    
     data = json.loads(request.data.decode())
-    return json.dumps(full_text_search(data['query']))
+    result = json.dumps(full_text_search(data['query']))
+
+    for i, json_obj in enumerate(result):
+        if json_obj['id'] in cookie:
+            result[i]['user_rating_from_cookie'] = cookie[json_obj['id']]
+
 
 @app.route('/createList', methods=['POST'])
 def createList():
