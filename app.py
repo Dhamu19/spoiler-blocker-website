@@ -43,7 +43,7 @@ def createList():
 @app.route('/rateList', methods=['POST'])
 def rateList():
     data = json.loads(request.data.decode())
-    cur.execute('SELECT rating, num_ratings FROM block_lists WHERE id=%s', (data['id'], ))
+    cur.execute('SELECT rating, num_ratings FROM spoiler_lists WHERE id=%s', (data['id'], ))
     ratingDict = dict(cur.fetchone())
 
     return set_cookie(str(data['id']), data['rating'], ratingDict)
@@ -67,7 +67,7 @@ def set_cookie(list_ID, userRating, ratingDict):
         newNumRatings = ratingDict['num_ratings']
         newRating = (ratingDict['rating'] * ratingDict['num_ratings'] - cookie[list_ID] + userRating) / newNumRatings
 
-    cur.execute('UPDATE block_lists SET rating=%s, num_ratings=%s WHERE id=%s', (newRating, newNumRatings, list_ID))
+    cur.execute('UPDATE spoiler_lists SET rating=%s, num_ratings=%s WHERE id=%s', (newRating, newNumRatings, list_ID))
     conn.commit()
 
     response = jsonify(newRating = newRating)
@@ -81,10 +81,10 @@ def set_cookie(list_ID, userRating, ratingDict):
 @app.route('/downloadList', methods=['GET'])
 def downloadList():
     listID = request.args.get('id', '')
-    cur.execute('SELECT title, tags, num_downloads FROM block_lists WHERE id=%s', (listID,))
+    cur.execute('SELECT title, tags, num_downloads FROM spoiler_lists WHERE id=%s', (listID,))
     spoilerList = cur.fetchone()
     if spoilerList:
-        cur.execute('UPDATE block_lists SET num_downloads=%s WHERE id=%s', (spoilerList['num_downloads'] + 1, listID))
+        cur.execute('UPDATE spoiler_lists SET num_downloads=%s WHERE id=%s', (spoilerList['num_downloads'] + 1, listID))
         conn.commit()
         return json.dumps({'list': dict(spoilerList), 'Status': 'Success'})
     else:
