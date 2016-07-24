@@ -5,16 +5,16 @@ import config
 def full_text_search(query, page_no):
     offset = (page_no - 1) * config.ROWS_PER_PAGE
 
-    count = None
+    count = -1
     if page_no == 1:
         cur.execute("SELECT COUNT(*) FROM spoiler_lists WHERE (title ILIKE %s)",
-            ('%' + query + '%', )
+            ('%' + query + '%',)
         )
         count = cur.fetchone()['count']
 
     # If empty query, return all rows
     if query == '':
-        cur.execute("SELECT id, title, tags, rating, num_downloads FROM spoiler_lists LIMIT %s ORDER BY rating OFFSET %s",
+        cur.execute("SELECT id, title, tags, rating, num_downloads FROM spoiler_lists ORDER BY rating LIMIT %s OFFSET %s",
             (config.ROWS_PER_PAGE, offset)
         )
         results = map(dict, cur.fetchall())
@@ -30,11 +30,11 @@ def full_text_search(query, page_no):
 # Return row data matching a query for populating a page with results
 def search_rows(results, id_set, query, limit, offset):
     cur.execute(
-        "SELECT id, title, tags, rating, num_downloads FROM spoiler_lists WHERE (title ILIKE %s) LIMIT %s ORDER BY rating OFFSET %s",
+        "SELECT id, title, tags, rating, num_downloads FROM spoiler_lists WHERE (title ILIKE %s) ORDER BY rating LIMIT %s OFFSET %s",
         (query, limit, offset)
     )
-    check_duplicates(results, id_set)
 
+    check_duplicates(results, id_set)
 
 def full_title_search(query):
     results = []
@@ -44,16 +44,14 @@ def full_title_search(query):
 
     return map(lambda x: x['title'], results)
 
-
 # Return titles matching a query for autocomplete query
 def search_titles(results, id_set, query):
     cur.execute(
-        "SELECT title, id FROM block_lists WHERE (title ILIKE %s) LIMIT %s",
+        "SELECT title, id FROM spoiler_lists WHERE (title ILIKE %s) LIMIT %s",
         (query, config.AUTCOMPLETE_MAX_ROWS)
     )
 
     check_duplicates(results, id_set)
-
 
 def check_duplicates(results, id_set):
     for result in cur.fetchall():
