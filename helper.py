@@ -33,19 +33,31 @@ def search_rows(results, id_set, query, limit, offset):
         "SELECT id, title, tags, rating, num_downloads FROM spoiler_lists WHERE (title ILIKE %s) LIMIT %s ORDER BY rating OFFSET %s",
         (query, limit, offset)
     )
+    check_duplicates(results, id_set)
 
+
+def full_title_search(query):
+    results = []
+    id_set = set()
+    search_titles(results, id_set, query + '%')
+    search_titles(results, id_set, '%' + query + '%')
+
+    return map(lambda x: x['title'], results)
+
+
+# Return titles matching a query for autocomplete query
+def search_titles(results, id_set, query):
+    cur.execute(
+        "SELECT title, id FROM block_lists WHERE (title ILIKE %s) LIMIT %s",
+        (query, config.AUTCOMPLETE_MAX_ROWS)
+    )
+
+    check_duplicates(results, id_set)
+
+
+def check_duplicates(results, id_set):
     for result in cur.fetchall():
         result_dict = dict(result)
         if result_dict['id'] not in id_set:
             results.append(result_dict)
-            id_set.add(result_dict['id'])    
-
-
-# Return titles matching a query for autocomplete query
-def search_titles(query):
-    cur.execute(
-        "SELECT title FROM spoiler_lists WHERE (title ILIKE %s) LIMIT %s",
-        (query, config.AUTCOMPLETE_MAX_ROWS)
-    )
-
-    return map(lambda row: row['title'], cur.fetchall())
+            id_set.add(result_dict['id'])

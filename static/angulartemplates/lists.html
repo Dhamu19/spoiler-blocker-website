@@ -16,7 +16,7 @@
     <div class="list-group" ng-if="list.displayTags">
       <div class="list-group-item">
         <label>Tags</label>
-        <h6 class="list-group-item-heading">[[ list.tags ]]</h6>
+        <h4 class="list-group-item-heading">[[ list.tags ]]</h4>
       </div>
 
       <div class="list-group-item">
@@ -32,7 +32,7 @@
 
       <div class="list-group-item">
         <label>Download ID</label>
-        <h6 class="list-group-item-heading">Enter this code to download list: <strong>[[ list.id ]]</strong></h6>
+        <h4 class="list-group-item-heading">Enter this code to download list: <strong>[[ list.id ]]</strong></h4>
       </div>
     </div>
 
@@ -40,5 +40,5 @@
 </div>
 
 <div class="container" style="text-align: center">
-  <ul uib-pagination items-per-page="2" total-items="numLists" ng-change="getLists()" ng-model="currentPage" class="pagination-sm" boundary-link-numbers="true"></ul>
+  <ul uib-pagination items-per-page="postsPerPage" total-items="numLists" ng-change="getLists()" ng-model="currentPage" class="pagination" boundary-link-numbers="true"></ul>
 </div>

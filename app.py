@@ -2,8 +2,9 @@ from flask import Flask, render_template, request, jsonify
 from datetime import datetime, timedelta
 import json
 import os
-from helper import full_text_search, search_titles
+from helper import full_text_search, full_title_search
 from db_connector import conn, cur
+import config
 
 app = Flask(__name__)
 
@@ -28,7 +29,11 @@ def getLists():
 @app.route('/getTitles', methods=['POST'])
 def getTitles():
     data = json.loads(request.data.decode())
-    return json.dumps(search_titles(data['query']))
+    return json.dumps(full_title_search(data['query']))
+
+@app.route('/postsPerPage', methods=['GET'])
+def postsPerPage():
+    return str(config.ROWS_PER_PAGE)
 
 @app.route('/createList', methods=['POST'])
 def createList():

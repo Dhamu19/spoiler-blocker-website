@@ -6,18 +6,18 @@ app.config(function($interpolateProvider) {
 });
 
 app.config(function($routeProvider) {
-		$routeProvider
-			.when('/', {
-				templateUrl : '../static/angulartemplates/lists.html',
-				controller  : 'BrowseController'
-			})
-			.when('/createList', {
-				templateUrl : '../static/angulartemplates/createList.html',
-				controller  : 'CreateController'
-			})
-      .otherwise({
-        redirectTo: '/'
-      });
+	$routeProvider
+		.when('/', {
+			templateUrl : '../static/angulartemplates/lists.html',
+			controller  : 'BrowseController'
+		})
+		.when('/createList', {
+			templateUrl : '../static/angulartemplates/createList.html',
+			controller  : 'CreateController'
+		})
+    .otherwise({
+      redirectTo: '/'
+    });
 });
 
 app.factory('Query', function($http){
@@ -37,6 +37,17 @@ app.controller('BrowseController', function($scope, $http, Query, $window) {
   $scope.lists = {};
   $scope.numLists = null;
   $scope.currentPage = 1;
+  $scope.postsPerPage = null;
+
+  $scope.getPostsPerPage = function () {
+    $http({
+      method: 'GET',
+      url: '/postsPerPage',
+      headers: {'Content-Type': 'json'}
+    }).then(function(response) {
+      $scope.postsPerPage = response.data;
+    })
+  }
 
   $scope.getLists = function(){
     $http({
@@ -86,11 +97,13 @@ app.controller('BrowseController', function($scope, $http, Query, $window) {
     }
   });
 
+  $scope.getPostsPerPage();
   $scope.getLists();
 });
 
-app.controller('CreateController', function($scope, $http) {
+app.controller('CreateController', function($scope, $http, $timeout) {
 	$scope.createForm = {};
+  $scope.displayAlert = false;
 
 	$scope.submitForm = function () {
 		$http({
@@ -102,22 +115,28 @@ app.controller('CreateController', function($scope, $http) {
 			console.log(data);
 		});
 		$scope.createForm = {};
+    $scope.displayAlert = true;
+    $timeout(function () {
+			$scope.displayAlert = false;
+		}, 3000);
 	}
 })
 
 app.controller('NavController', function($scope, $http, Query, $location) {
   $scope.asyncSelected = undefined;
 
-  $scope.getTitles = $http({
-    method: 'POST',
-    url: '/getTitles',
-    data: {
-      query: Query.query
-    },
-    headers: {'Content-Type': 'json'}
-  }).then(function(response) {
-      return item.title;
-	});
+  $scope.getTitles = function(query) {
+    return $http({
+      method: 'POST',
+      url: '/getTitles',
+      data: {
+        query: query
+      },
+      headers: {'Content-Type': 'json'}
+    }).then(function(response) {
+      return response.data;
+  	});
+  }
 
   $scope.submitSearch = function() {
     if ($location.path() != '/') {
