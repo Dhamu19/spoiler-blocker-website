@@ -8,16 +8,12 @@ app.config(function($interpolateProvider) {
 app.config(function($routeProvider) {
 		$routeProvider
 			.when('/', {
-				templateUrl : '../static/angulartemplates/home.html',
-				controller  : 'HomeController'
+				templateUrl : '../static/angulartemplates/lists.html',
+				controller  : 'BrowseController'
 			})
 			.when('/createList', {
 				templateUrl : '../static/angulartemplates/createList.html',
 				controller  : 'CreateController'
-			})
-			.when('/browseLists', {
-				templateUrl : '../static/angulartemplates/lists.html',
-				controller  : 'BrowseController'
 			})
       .otherwise({
         redirectTo: '/'
@@ -115,10 +111,14 @@ app.controller('NavController', function($scope, $http, Lists, $location) {
   }
 
   $scope.submitSearch = function() {
-    if ($location.path() != '/browseLists') {
-      $location.path('/browseLists');
+    if ($location.path() != '/') {
+      $location.path('/');
     }
     Lists.query = $scope.asyncSelected;
     $scope.asyncSelected = '';
+  }
+
+  $scope.navigateToCreate = function () {
+    $location.path('/createList');
   }
 })
