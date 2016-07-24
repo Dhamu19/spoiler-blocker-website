@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, jsonify
 from datetime import datetime, timedelta
 import json
-from helper import full_text_search, cur, conn, os
+import os
+from helper import full_text_search
+from db_connector import conn, cur
 
 app = Flask(__name__)
 

@@ -1,20 +1,5 @@
-import os
-import psycopg2
-import psycopg2.extras
-import urlparse
-
-# Database connection
-urlparse.uses_netloc.append("postgres")
-url = urlparse.urlparse(os.environ["DATABASE_URL"])
-
-conn = psycopg2.connect(
-    database=url.path[1:],
-    user=url.username,
-    password=url.password,
-    host=url.hostname,
-    port=url.port
-)
-cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+from db_connector import cur
+import config
 
 
 def full_text_search(search):
@@ -31,24 +16,33 @@ def full_text_search(search):
         return map(dict, cur.fetchall())
     else:
         results = []
-        idSet = set()
-        search_lists(results, idSet, 'title', search + '%')
-        search_lists(results, idSet, 'title', '%' + search + '%')
+        id_set = set()
+        search_lists(results, id_set, 'title', search + '%')
+        search_lists(results, id_set, 'title', '%' + search + '%')
 
     return results
 
 
-def search_lists(results, idSet, column, search):
-    select_lists(column, search)
+def search_lists(results, id_set, column, search):
+    select_lists(column, search, config.ROWS_PER_PAGE)
     for result in cur.fetchall():
-        resultDict = dict(result)
-        if resultDict['id'] not in idSet:
-            results.append(resultDict)
-            idSet.add(resultDict['id'])
+        result_dict = dict(result)
+        if result_dict['id'] not in id_set:
+            results.append(result_dict)
+            id_set.add(result_dict['id'])
 
 
-def select_lists(column, search):
+# Return row data matching a query for populating a page with results
+def select_lists(column, search, limit):
     cur.execute(
-        "SELECT id, title, tags, rating, num_downloads FROM block_lists WHERE (" + column + " ILIKE %s) LIMIT 10",
-        (search,)
+        "SELECT id, title, tags, rating, num_downloads FROM block_lists WHERE (%s ILIKE %s) LIMIT %s",
+        (column, search, limit)
+    )
+
+
+# Return titles matching a search query for autocomplete search
+def select_titles(search, limit):
+    cur.execute(
+        "SELECT title FROM block_lists WHERE (title ILIKE %s) LIMIT %s",
+        (search, limit)
     )
