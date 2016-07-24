@@ -20,40 +20,45 @@ app.config(function($routeProvider) {
       });
 });
 
-app.factory('Lists', function($http){
-  var getLists = function(query){
-     return $http({
-        method: 'POST',
-        url: '/getLists',
-        data: {
-          query: query
-        },
-        headers: {'Content-Type': 'json'}
-    })
-  }
+app.factory('Query', function($http){
   return {
-    query: '',
-    getLists: getLists
+    query: ''
   };
 });
 
-app.controller('HomeController', function($scope, Lists) {
+app.controller('HomeController', function($scope, Query) {
   $scope.emptyQuery = function() {
-    Lists.query = '';
+    Query.query = '';
   }
 })
 
-app.controller('BrowseController', function($scope, $http, Lists, $window) {
+app.controller('BrowseController', function($scope, $http, Query, $window) {
   $scope.round = $window.Math.round;
   $scope.lists = {};
+  $scope.numLists = null;
+  $scope.currentPage = 1;
 
-  $scope.getLists = function(query) {
-    Lists.getLists(query).then(function(response) {
+  $scope.getLists = function(){
+    $http({
+      method: 'POST',
+      url: '/getLists',
+      data: {
+        query: Query.query,
+        pageNum: $scope.currentPage
+      },
+      headers: {'Content-Type': 'json'}
+    }).then(function(response) {
       // response.data is array of json objects
       var listObj = {};
-      for (var i=0; i<response.data.length; i++) {
-        var id = response.data[i]['id'];
-        listObj[id] = response.data[i];
+      var result = response.data.result;
+
+      if (response.data.count != -1) {
+        $scope.numLists = response.data.count;
+      }
+
+      for (var i=0; i<result.length; i++) {
+        var id = result[i]['id'];
+        listObj[id] = result[i];
       }
 
       $scope.lists = listObj;
@@ -75,13 +80,13 @@ app.controller('BrowseController', function($scope, $http, Lists, $window) {
     })
   }
 
-  $scope.$watch(function () { return Lists.query; }, function (newValue, oldValue) {
+  $scope.$watch(function () { return Query.query; }, function (newValue, oldValue) {
     if (newValue) {
-      $scope.getLists(Lists.query);
+      $scope.getLists(Query.query);
     }
   });
 
-  $scope.getLists(Lists.query);
+  $scope.getLists();
 });
 
 app.controller('CreateController', function($scope, $http) {
@@ -100,22 +105,25 @@ app.controller('CreateController', function($scope, $http) {
 	}
 })
 
-app.controller('NavController', function($scope, $http, Lists, $location) {
+app.controller('NavController', function($scope, $http, Query, $location) {
   $scope.asyncSelected = undefined;
 
-  $scope.getTitles = function(query) {
-    return Lists.getLists(query).then(function(response) {
-      return response.data.map(function(item) {
-        return item.title;
-      });
-		});
-  }
+  $scope.getTitles = $http({
+    method: 'POST',
+    url: '/getTitles',
+    data: {
+      query: Query.query
+    },
+    headers: {'Content-Type': 'json'}
+  }).then(function(response) {
+      return item.title;
+	});
 
   $scope.submitSearch = function() {
     if ($location.path() != '/') {
       $location.path('/');
     }
-    Lists.query = $scope.asyncSelected;
+    Query.query = $scope.asyncSelected;
     $scope.asyncSelected = '';
   }
 
