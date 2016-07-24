@@ -18,7 +18,6 @@ app.config(function($routeProvider) {
     .otherwise({
       redirectTo: '/'
     });
-  // $locationProvider.html5Mode(true);
 });
 
 app.factory('Query', function($http){
@@ -102,8 +101,9 @@ app.controller('BrowseController', function($scope, $http, Query, $window) {
   $scope.getLists();
 });
 
-app.controller('CreateController', function($scope, $http) {
+app.controller('CreateController', function($scope, $http, $timeout) {
 	$scope.createForm = {};
+  $scope.displayAlert = false;
 
 	$scope.submitForm = function () {
 		$http({
@@ -115,6 +115,10 @@ app.controller('CreateController', function($scope, $http) {
 			console.log(data);
 		});
 		$scope.createForm = {};
+    $scope.displayAlert = true;
+    $timeout(function () {
+			$scope.displayAlert = false;
+		}, 3000);
 	}
 })
 
