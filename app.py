@@ -12,8 +12,6 @@ def index():
 @app.route('/getLists', methods=['POST'])
 def getLists():
     data = json.loads(request.data.decode())
-    print(request.cookies)
-
     return json.dumps(fullTextSearch(data['query']))
 
 @app.route('/createList', methods=['POST'])
