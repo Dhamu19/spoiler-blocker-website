@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from datetime import datetime, timedelta
 import json
 import os
-from helper import full_text_search
+from helper import full_text_search, search_titles
 from db_connector import conn, cur
 
 app = Flask(__name__)
@@ -24,6 +24,11 @@ def getLists():
 
     return json.dumps({'result': result, 'count': count})
 
+
+@app.route('/getTitles', methods=['POST'])
+def getTitles():
+    data = json.loads(request.data.decode())
+    return json.dumps(search_titles(data['query']))
 
 @app.route('/createList', methods=['POST'])
 def createList():

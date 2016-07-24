@@ -42,8 +42,10 @@ def search_rows(results, id_set, query, limit, offset):
 
 
 # Return titles matching a query for autocomplete query
-def search_titles(query, limit):
+def search_titles(query):
     cur.execute(
         "SELECT title FROM block_lists WHERE (title ILIKE %s) LIMIT %s",
-        (query, limit)
+        (query, config.AUTCOMPLETE_MAX_ROWS)
     )
+
+    return map(lambda x: x['title'], cur.fetchall())
