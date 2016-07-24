@@ -32,8 +32,23 @@ def rateList():
     newNumRatings = ratingDict['num_ratings'] + 1
     newRating = (ratingDict['rating'] * ratingDict['num_ratings'] + data['rating']) / (newNumRatings)
     cur.execute('UPDATE block_lists SET rating=%s, num_ratings=%s WHERE id=%s', (newRating, newNumRatings, data['id']))
+    
+    set_cookie({data['id']: 0})
+
     conn.commit()
     return json.dumps({'newRating': newRating})
+
+def set_cookie(json_data):
+    if (request.cookies.get('ratings')) is None:
+        resp = make_response(json_data, 200, 'content-type:application/json')
+        resp.set_cookie('ratings', json_data)
+    else:
+        cookie = request.cookies.get('ratings')
+        resp = make_response(json_data, 200, 'content-type:application/json')
+        print("cookie: " + str(cookie))
+
+    return resp
+
 
 @app.route('/downloadList', methods=['GET'])
 def downloadList():

@@ -16,7 +16,8 @@ conn = psycopg2.connect(
 )
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-def fullTextSearch(search):
+
+def full_text_search(search):
     # cur.execute(
     #     "SELECT id, title, tags FROM ( \
     #          SELECT id, title, tags, tsv \
@@ -31,21 +32,23 @@ def fullTextSearch(search):
     else:
         results = []
         idSet = set()
-        searchLists(results, idSet, 'title', search + '%')
-        searchLists(results, idSet, 'title', '%' + search + '%')
-        searchLists(results, idSet, 'tags', '%' + search + '%')
+        search_lists(results, idSet, 'title', search + '%')
+        search_lists(results, idSet, 'title', '%' + search + '%')
+        search_lists(results, idSet, 'tags', '%' + search + '%')
 
     return results
 
-def searchLists(results, idSet, column, search):
-    selectLists(column, search)
+
+def search_lists(results, idSet, column, search):
+    select_lists(column, search)
     for result in cur.fetchall():
         resultDict = dict(result)
         if resultDict['id'] not in idSet:
             results.append(resultDict)
             idSet.add(resultDict['id'])
 
-def selectLists(column, search):
+
+def select_lists(column, search):
     cur.execute(
         "SELECT id, title, tags, rating, num_downloads FROM block_lists WHERE (" + column + " ILIKE %s) LIMIT 10",
         (search,)
