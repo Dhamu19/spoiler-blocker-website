@@ -16,7 +16,7 @@
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
           <input type="text" class="form-control" placeholder="Search"
-           uib-typeahead="title for title in getTitles($viewValue) | limitTo:8" ng-model="asyncSelected">
+           uib-typeahead="title for title in getTitles($viewValue)" ng-model="asyncSelected">
         </div>
         <button type="submit" class="btn btn-default" ng-click="submitSearch()">Submit</button>
       </form>
