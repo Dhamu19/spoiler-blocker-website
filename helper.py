@@ -2,49 +2,48 @@ from db_connector import cur
 import config
 
 
-def full_text_search(search):
-    # cur.execute(
-    #     "SELECT id, title, tags FROM ( \
-    #          SELECT id, title, tags, tsv \
-    #          FROM block_lists, plainto_tsquery(%s) AS q \
-    #          WHERE (tsv @@ q) \
-    #      ) AS t1 ORDER BY ts_rank_cd(t1.tsv, plainto_tsquery(%s)) DESC LIMIT 5;",
-    #     (search, search)
-    # )
-    if search == '':
-        cur.execute("SELECT id, title, tags, rating, num_downloads FROM block_lists;")
-        return map(dict, cur.fetchall())
+def full_text_search(query, page_no):
+    offset = (page_no - 1) * config.ROWS_PER_PAGE
+
+    count = None
+    if page_no == 1:
+        cur.execute("SELECT COUNT(*) FROM block_lists WHERE (title ILIKE %s)", 
+            ('%' + query + '%')
+        )
+        count = cur.fetchone()['count']
+
+    # If empty query, return all rows
+    if query == '':
+        cur.execute("SELECT id, title, tags, rating, num_downloads FROM block_lists LIMIT %s ORDER BY rating OFFSET %s",
+            config.ROWS_PER_PAGE, offset
+        )
+        results = map(dict, cur.fetchall())
     else:
         results = []
         id_set = set()
-        search_lists(results, id_set, 'title', search + '%')
-        search_lists(results, id_set, 'title', '%' + search + '%')
+        search_rows(results, id_set, query + '%', config.ROWS_PER_PAGE, offset)
+        search_rows(results, id_set, '%' + query + '%', config.ROWS_PER_PAGE, offset)
 
-    return results
+    return results, count
 
 
-def search_lists(results, id_set, column, search):
-    select_lists(column, search, config.ROWS_PER_PAGE)
+# Return row data matching a query for populating a page with results
+def search_rows(results, id_set, query, limit, offset):
+    cur.execute(
+        "SELECT id, title, tags, rating, num_downloads FROM block_lists WHERE (title ILIKE %s) LIMIT %s ORDER BY rating OFFSET %s",
+        (query, limit, offset)
+    )
+
     for result in cur.fetchall():
         result_dict = dict(result)
         if result_dict['id'] not in id_set:
             results.append(result_dict)
-            id_set.add(result_dict['id'])
+            id_set.add(result_dict['id'])    
 
 
-# Return row data matching a query for populating a page with results
-def select_lists(column, search, limit, page_no):
-    offset = (page_no - 1) * limit
-
-    cur.execute(
-        "SELECT id, title, tags, rating, num_downloads FROM block_lists WHERE (%s ILIKE %s) LIMIT %s ORDER BY rating OFFSET %s",
-        (column, search, limit, offset)
-    )
-
-
-# Return titles matching a search query for autocomplete search
-def select_titles(search, limit):
+# Return titles matching a query for autocomplete query
+def search_titles(query, limit):
     cur.execute(
         "SELECT title FROM block_lists WHERE (title ILIKE %s) LIMIT %s",
-        (search, limit)
+        (query, limit)
     )
