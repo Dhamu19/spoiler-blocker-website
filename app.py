@@ -50,7 +50,7 @@ def set_cookie(newRating, list_ID, ratingDict):
         newRating = (ratingDict['rating'] * ratingDict['num_ratings'] + data['rating']) / (newNumRatings)
         cur.execute('UPDATE block_lists SET rating=%s, num_ratings=%s WHERE id=%s', (newRating, newNumRatings, data['id']))
         conn.commit()
-        
+
 
     resp.set_cookie('ratings', json.dumps({list_ID: 0}))
 

@@ -23,11 +23,11 @@
       <div class="list-group-item">
         <label>Rate It!</label>
         <div class="rating" style="width: 95px">
-          <span ng-click="rateList(list.id, 5)">☆</span>
-          <span ng-click="rateList(list.id, 4)">☆</span>
-          <span ng-click="rateList(list.id, 3)">☆</span>
-          <span ng-click="rateList(list.id, 2)">☆</span>
-          <span ng-click="rateList(list.id, 1)">☆</span>
+          <span ng-class="list.user_rating_from_cookie >= 5? 'star-on': ''" ng-click="rateList(list.id, 5)">☆</span>
+          <span ng-class="list.user_rating_from_cookie >= 4? 'star-on': ''" ng-click="rateList(list.id, 4)">☆</span>
+          <span ng-class="list.user_rating_from_cookie >= 3? 'star-on': ''" ng-click="rateList(list.id, 3)">☆</span>
+          <span ng-class="list.user_rating_from_cookie >= 2? 'star-on': ''" ng-click="rateList(list.id, 2)">☆</span>
+          <span ng-class="list.user_rating_from_cookie >= 1? 'star-on': ''" ng-click="rateList(list.id, 1)">☆</span>
         </div>
       </div>
 

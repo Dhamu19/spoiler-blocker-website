@@ -54,7 +54,7 @@ app.controller('BrowseController', function($scope, $http, Lists, $window) {
   $scope.getLists = function(query) {
     Lists.getLists(query).then(function(response) {
       // response.data is array of json objects
-      var listObj;
+      var listObj = {};
       for (var i=0; i<response.data.length; i++) {
         var id = response.data[i]['id'];
         listObj[id] = response.data[i];
