@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from datetime import date, datetime
+from datetime import datetime, timedelta
 import json
 from helper import full_text_search, cur, conn, os
 
@@ -64,8 +64,9 @@ def set_cookie(list_ID, userRating, ratingDict):
     conn.commit()
 
     response = jsonify(newRating = newRating)
+    expire_date = datetime.now() + timedelta(weeks=100)
     cookie[list_ID] = userRating
-    response.set_cookie('ratings', json.dumps(cookie))
+    response.set_cookie('ratings', json.dumps(cookie), expires=expire_date)
 
     return response
 

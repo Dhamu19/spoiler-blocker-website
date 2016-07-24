@@ -1,10 +1,9 @@
 <div class="container" ng-repeat="(id, list) in lists track by id">
   <div class="panel panel-default">
-    <div class="panel-heading clearfix">
+    <div class="panel-heading clearfix clickable" ng-click="list.displayTags = list.displayTags? false: true">
       <h3 class="panel-title pull-left">[[ list.title ]]</h3>
-			<span class="glyphicon display-arrow clickable"
-       ng-class="list.displayTags? 'glyphicon-triangle-bottom' : 'glyphicon-triangle-right'"
-       ng-click="list.displayTags = list.displayTags? false: true"></span>
+			<span class="glyphicon display-arrow"
+       ng-class="list.displayTags? 'glyphicon-triangle-bottom' : 'glyphicon-triangle-right'"></span>
       <button class="btn btn-danger pull-right no-hover" type="button">
         Downloads <span class="badge left-space">[[ list.num_downloads ]]</span>
       </button>
