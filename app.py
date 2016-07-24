@@ -11,8 +11,15 @@ def index():
 
 @app.route('/getLists', methods=['POST'])
 def getLists():
+    cookie = json.loads(request.cookies.get('ratings', "{}"))
+    
     data = json.loads(request.data.decode())
-    return json.dumps(full_text_search(data['query']))
+    result = json.dumps(full_text_search(data['query']))
+
+    for i, json_obj in enumerate(result):
+        if json_obj['id'] in cookie:
+            result[i]['user_rating_from_cookie'] = cookie[json_obj['id']]
+
 
 @app.route('/createList', methods=['POST'])
 def createList():
@@ -30,16 +37,16 @@ def rateList():
     cur.execute('SELECT rating, num_ratings FROM block_lists WHERE id=%s', (data['id'], ))
     ratingDict = dict(cur.fetchone())
 
-    response = set_cookie({'newRating': newRating, 'Status': 'Success'}, str(data['id']), ratingDict)
+    response = set_cookie(str(data['id']), ratingDict)
     return response
 
-def set_cookie(newRating, list_ID, ratingDict):
+def set_cookie(list_ID, ratingDict):
     is_new_rating = True
+    cookie = json.loads(request.cookies.get('ratings', "{}"))
 
     if (request.cookies.get('ratings')) is None:
         is_new_rating = True
     else:
-        cookie = json.loads(request.cookies.get('ratings'))
         if list_ID in cookie:
             is_new_rating = False
         else:
