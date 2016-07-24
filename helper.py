@@ -33,10 +33,12 @@ def search_lists(results, id_set, column, search):
 
 
 # Return row data matching a query for populating a page with results
-def select_lists(column, search, limit):
+def select_lists(column, search, limit, page_no):
+    offset = (page_no - 1) * limit
+
     cur.execute(
-        "SELECT id, title, tags, rating, num_downloads FROM block_lists WHERE (%s ILIKE %s) LIMIT %s",
-        (column, search, limit)
+        "SELECT id, title, tags, rating, num_downloads FROM block_lists WHERE (%s ILIKE %s) LIMIT %s ORDER BY rating OFFSET %s",
+        (column, search, limit, offset)
     )
 
 

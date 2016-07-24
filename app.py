@@ -16,13 +16,13 @@ def getLists():
     cookie = json.loads(request.cookies.get('ratings', "{}"))
 
     data = json.loads(request.data.decode())
-    result = full_text_search(data['query'])
+    result, count = full_text_search(data['query'], data['pageNum'])
 
     for i, json_obj in enumerate(result):
         if str(json_obj['id']) in cookie:
             result[i]['user_rating_from_cookie'] = cookie[str(json_obj['id'])]
 
-    return json.dumps(result)
+    return json.dumps({'result': result, 'count': count})
 
 
 @app.route('/createList', methods=['POST'])
