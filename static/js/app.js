@@ -61,6 +61,7 @@ app.controller('BrowseController', function($scope, $http, Lists, $window) {
 	};
 
   $scope.rateList = function(listID, rating) {
+    $scope.lists[listID].user_rating_from_cookie = rating;
     $http({
       method: 'POST',
       url: '/rateList',

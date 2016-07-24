@@ -18,8 +18,7 @@ def getLists():
 
     for i, json_obj in enumerate(result):
         if str(json_obj['id']) in cookie:
-            # result[i]['user_rating_from_cookie'] = cookie[str(json_obj['id'])]
-            result[i]['user_rating_from_cookie'] = 4
+            result[i]['user_rating_from_cookie'] = cookie[str(json_obj['id'])]
 
     return json.dumps(result)
 
@@ -40,10 +39,9 @@ def rateList():
     cur.execute('SELECT rating, num_ratings FROM block_lists WHERE id=%s', (data['id'], ))
     ratingDict = dict(cur.fetchone())
 
-    response = set_cookie(str(data['id']), ratingDict, data)
-    return response
+    return set_cookie(str(data['id']), data['rating'], ratingDict)
 
-def set_cookie(list_ID, ratingDict, data):
+def set_cookie(list_ID, userRating, ratingDict):
     is_new_rating = True
     cookie = json.loads(request.cookies.get('ratings', "{}"))
 
@@ -57,16 +55,19 @@ def set_cookie(list_ID, ratingDict, data):
 
     if is_new_rating:
         newNumRatings = ratingDict['num_ratings'] + 1
-        newRating = (ratingDict['rating'] * ratingDict['num_ratings'] + data['rating']) / (newNumRatings)
-        cur.execute('UPDATE block_lists SET rating=%s, num_ratings=%s WHERE id=%s', (newRating, newNumRatings, data['id']))
-        conn.commit()
+        newRating = (ratingDict['rating'] * ratingDict['num_ratings'] + userRating) / newNumRatings
+    else:
+        newNumRatings = ratingDict['num_ratings']
+        newRating = (ratingDict['rating'] * ratingDict['num_ratings'] - cookie[list_ID] + userRating) / newNumRatings
 
+    cur.execute('UPDATE block_lists SET rating=%s, num_ratings=%s WHERE id=%s', (newRating, newNumRatings, list_ID))
+    conn.commit()
 
-    resp.set_cookie('ratings', json.dumps({list_ID: 0}))
+    response = jsonify(newRating = newRating)
+    cookie[list_ID] = userRating
+    response.set_cookie('ratings', json.dumps(cookie))
 
-    cookie[list_ID] = 0
-    resp.set_cookie('ratings', json.dumps(cookie))
-    return resp
+    return response
 
 
 @app.route('/downloadList', methods=['GET'])
