@@ -33,7 +33,6 @@ def fullTextSearch(search):
         idSet = set()
         searchLists(results, idSet, 'title', search + '%')
         searchLists(results, idSet, 'title', '%' + search + '%')
-        searchLists(results, idSet, 'tags', '%' + search + '%')
 
     return results
 
