@@ -32,9 +32,8 @@ def full_text_search(search):
     else:
         results = []
         idSet = set()
-        search_lists(results, idSet, 'title', search + '%')
-        search_lists(results, idSet, 'title', '%' + search + '%')
-        search_lists(results, idSet, 'tags', '%' + search + '%')
+        searchLists(results, idSet, 'title', search + '%')
+        searchLists(results, idSet, 'title', '%' + search + '%')
 
     return results
 
