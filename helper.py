@@ -48,7 +48,7 @@ def full_title_search(query):
 def search_titles(results, id_set, query):
     cur.execute(
         "SELECT title, id FROM block_lists WHERE (title ILIKE %s) LIMIT %s",
-        ('%' + query + '%', config.AUTCOMPLETE_MAX_ROWS)
+        (query, config.AUTCOMPLETE_MAX_ROWS)
     )
 
     check_duplicates(results, id_set)
