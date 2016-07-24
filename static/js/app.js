@@ -41,7 +41,7 @@ app.factory('Lists', function($http){
   };
 });
 
-app.controller('HomeController', function($rootScope, $scope, Lists) {
+app.controller('HomeController', function($scope, Lists) {
   $scope.emptyQuery = function() {
     Lists.query = '';
   }
@@ -49,11 +49,18 @@ app.controller('HomeController', function($rootScope, $scope, Lists) {
 
 app.controller('BrowseController', function($scope, $http, Lists, $window) {
   $scope.round = $window.Math.round;
-  $scope.lists = [];
+  $scope.lists = {};
 
   $scope.getLists = function(query) {
     Lists.getLists(query).then(function(response) {
-      $scope.lists = response.data;
+      // response.data is array of json objects
+      var listObj;
+      for (var i=0; i<response.data.length; i++) {
+        var id = response.data[i]['id'];
+        listObj[id] = response.data[i];
+      }
+
+      $scope.lists = listObj;
 		});
 	};
 
@@ -67,11 +74,7 @@ app.controller('BrowseController', function($scope, $http, Lists, $window) {
       },
       headers: {'Content-Type': 'json'}
     }).then(function(response) {
-      for (var i = 0; i < $scope.lists.length; i++) {
-        if ($scope.lists[i].id == listID) {
-          $scope.lists[i].rating = response.data.newRating
-        }
-      }
+      $scope.lists[listID].rating = response.data.newRating;
     })
   }
 
