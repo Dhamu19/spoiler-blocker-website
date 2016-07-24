@@ -7,8 +7,8 @@ def full_text_search(query, page_no):
 
     count = None
     if page_no == 1:
-        cur.execute("SELECT COUNT(*) FROM spoiler_lists WHERE (title ILIKE %s)", 
-            ('%' + query + '%')
+        cur.execute("SELECT COUNT(*) FROM spoiler_lists WHERE (title ILIKE %s)",
+            ('%' + query + '%', )
         )
         count = cur.fetchone()['count']
 
