@@ -67,6 +67,10 @@ app.controller('BrowseController', function($scope, $http, Lists, $window) {
       },
       headers: {'Content-Type': 'json'}
     }).then(function(response) {
+      if (response.data.Status == 'Big Problem') {
+        return;
+      }
+
       for (var i = 0; i < $scope.lists.length; i++) {
         if ($scope.lists[i].id == listID) {
           $scope.lists[i].rating = response.data.newRating

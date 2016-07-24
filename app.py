@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from datetime import date, datetime
 import json
-from helper import fullTextSearch, cur, conn, os
+from helper import full_text_search, cur, conn, os
 
 app = Flask(__name__)
 
@@ -12,7 +12,7 @@ def index():
 @app.route('/getLists', methods=['POST'])
 def getLists():
     data = json.loads(request.data.decode())
-    return json.dumps(fullTextSearch(data['query']))
+    return json.dumps(full_text_search(data['query']))
 
 @app.route('/createList', methods=['POST'])
 def createList():
@@ -29,24 +29,33 @@ def rateList():
     data = json.loads(request.data.decode())
     cur.execute('SELECT rating, num_ratings FROM block_lists WHERE id=%s', (data['id'], ))
     ratingDict = dict(cur.fetchone())
-    newNumRatings = ratingDict['num_ratings'] + 1
-    newRating = (ratingDict['rating'] * ratingDict['num_ratings'] + data['rating']) / (newNumRatings)
-    cur.execute('UPDATE block_lists SET rating=%s, num_ratings=%s WHERE id=%s', (newRating, newNumRatings, data['id']))
-    
-    set_cookie({data['id']: 0})
 
-    conn.commit()
-    return json.dumps({'newRating': newRating})
+    response = set_cookie({'newRating': newRating, 'Status': 'Success'}, str(data['id']), ratingDict)
+    return response
 
-def set_cookie(json_data):
+def set_cookie(newRating, list_ID, ratingDict):
+    is_new_rating = True
+
     if (request.cookies.get('ratings')) is None:
-        resp = make_response(json_data, 200, 'content-type:application/json')
-        resp.set_cookie('ratings', json_data)
+        is_new_rating = True
     else:
-        cookie = request.cookies.get('ratings')
-        resp = make_response(json_data, 200, 'content-type:application/json')
-        print("cookie: " + str(cookie))
+        cookie = json.loads(request.cookies.get('ratings'))
+        if list_ID in cookie:
+            is_new_rating = False
+        else:
+            is_new_rating = True
 
+    if is_new_rating:
+        newNumRatings = ratingDict['num_ratings'] + 1
+        newRating = (ratingDict['rating'] * ratingDict['num_ratings'] + data['rating']) / (newNumRatings)
+        cur.execute('UPDATE block_lists SET rating=%s, num_ratings=%s WHERE id=%s', (newRating, newNumRatings, data['id']))
+        conn.commit()
+        
+
+    resp.set_cookie('ratings', json.dumps({list_ID: 0}))
+
+    cookie[list_ID] = 0
+    resp.set_cookie('ratings', json.dumps(cookie))
     return resp
 
 

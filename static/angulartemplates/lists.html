@@ -1,4 +1,4 @@
-<div class="container" ng-repeat="list in lists track by list.id">
+<div class="container" ng-repeat="(id, list) in lists track by id">
   <div class="panel panel-default">
     <div class="panel-heading clearfix">
       <h3 class="panel-title pull-left">[[ list.title ]]</h3>
