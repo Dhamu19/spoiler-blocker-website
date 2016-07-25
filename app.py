@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from datetime import datetime, timedelta
 import json
 import os
-from helper import full_text_search, full_title_search
+from helper import full_text_search, full_title_search, set_cookie
 from db_connector import conn, cur
 import config
 from flask.ext.compress import Compress
@@ -54,35 +54,6 @@ def rateList():
     ratingDict = dict(cur.fetchone())
 
     return set_cookie(str(data['id']), data['rating'], ratingDict)
-
-def set_cookie(list_ID, userRating, ratingDict):
-    is_new_rating = True
-    cookie = json.loads(request.cookies.get('ratings', "{}"))
-
-    if (request.cookies.get('ratings')) is None:
-        is_new_rating = True
-    else:
-        if list_ID in cookie:
-            is_new_rating = False
-        else:
-            is_new_rating = True
-
-    if is_new_rating:
-        newNumRatings = ratingDict['num_ratings'] + 1
-        newRating = (ratingDict['rating'] * ratingDict['num_ratings'] + userRating) / newNumRatings
-    else:
-        newNumRatings = ratingDict['num_ratings']
-        newRating = (ratingDict['rating'] * ratingDict['num_ratings'] - cookie[list_ID] + userRating) / newNumRatings
-
-    cur.execute('UPDATE spoiler_lists SET rating=%s, num_ratings=%s WHERE id=%s', (newRating, newNumRatings, list_ID))
-    conn.commit()
-
-    response = jsonify(newRating = newRating)
-    expire_date = datetime.now() + timedelta(weeks=100)
-    cookie[list_ID] = userRating
-    response.set_cookie('ratings', json.dumps(cookie), expires=expire_date)
-
-    return response
 
 
 @app.route('/downloadList', methods=['GET'])

@@ -1,5 +1,6 @@
 var app = angular.module('SpoilerBlockerWebsite', ['ngRoute', 'ui.bootstrap']);
 
+// Change the interpolation since Jinja2 uses {{}}
 app.config(function($interpolateProvider) {
   $interpolateProvider.startSymbol('[[');
   $interpolateProvider.endSymbol(']]');
@@ -20,17 +21,12 @@ app.config(function($routeProvider) {
     });
 });
 
+// To share query between NavController and BrowseController
 app.factory('Query', function($http){
   return {
     query: ''
   };
 });
-
-app.controller('HomeController', function($scope, Query) {
-  $scope.emptyQuery = function() {
-    Query.query = '';
-  }
-})
 
 app.controller('BrowseController', function($scope, $http, Query, $window) {
   $scope.round = $window.Math.round;
@@ -39,6 +35,7 @@ app.controller('BrowseController', function($scope, $http, Query, $window) {
   $scope.currentPage = 1;
   $scope.postsPerPage = null;
 
+  // Fired once to get how many posts there are per page
   $scope.getPostsPerPage = function () {
     $http({
       method: 'GET',
@@ -49,6 +46,8 @@ app.controller('BrowseController', function($scope, $http, Query, $window) {
     })
   }
 
+  // Asks server for lists based on the query and
+  // the current page number
   $scope.getLists = function(){
     $http({
       method: 'POST',
@@ -63,10 +62,14 @@ app.controller('BrowseController', function($scope, $http, Query, $window) {
       var listObj = {};
       var result = response.data.result;
 
+      // If page num is 1, then count will not be -1
+      // If count isn't -1, then update it in the scope
       if (response.data.count != -1) {
         $scope.numLists = response.data.count;
       }
 
+      // Transform list of objects into an object keyed
+      // by list ID. Makes list updates faster
       for (var i=0; i<result.length; i++) {
         var id = result[i]['id'];
         listObj[id] = result[i];
@@ -77,7 +80,9 @@ app.controller('BrowseController', function($scope, $http, Query, $window) {
 	};
 
   $scope.rateList = function(listID, rating) {
+    // To make stars persist
     $scope.lists[listID].user_rating_from_cookie = rating;
+
     $http({
       method: 'POST',
       url: '/rateList',
@@ -87,17 +92,23 @@ app.controller('BrowseController', function($scope, $http, Query, $window) {
       },
       headers: {'Content-Type': 'json'}
     }).then(function(response) {
+      // Update rating in view
       $scope.lists[listID].rating = response.data.newRating;
     })
   }
 
+  // Watch for changes in query, if changes then
+  // Get lists for query and change pagination page to 1
   $scope.$watch(function () { return Query.query; }, function (newValue, oldValue) {
     if (newValue) {
-      $scope.getLists(Query.query);
+      $scope.currentPage = 1;
+      $scope.getLists();
     }
   });
 
+  // Fired once
   $scope.getPostsPerPage();
+  // Initial list load
   $scope.getLists();
 });
 
@@ -105,6 +116,7 @@ app.controller('CreateController', function($scope, $http, $timeout) {
 	$scope.createForm = {};
   $scope.displayAlert = false;
 
+  // Submit form to server, display success alert
 	$scope.submitForm = function () {
 		$http({
 			method: 'POST',
@@ -116,7 +128,9 @@ app.controller('CreateController', function($scope, $http, $timeout) {
 		});
 		$scope.createForm = {};
     $scope.displayAlert = true;
+
     $timeout(function () {
+      // Remove alert after 3 seconds
 			$scope.displayAlert = false;
 		}, 3000);
 	}
@@ -125,6 +139,8 @@ app.controller('CreateController', function($scope, $http, $timeout) {
 app.controller('NavController', function($scope, $http, Query, $location) {
   $scope.asyncSelected = undefined;
 
+  // Get titles of lists that match the query
+  // These titles are used in the autocomplete
   $scope.getTitles = function(query) {
     return $http({
       method: 'POST',
@@ -138,14 +154,16 @@ app.controller('NavController', function($scope, $http, Query, $location) {
   	});
   }
 
+  // Go to list browsing view
+  // Update query
   $scope.submitSearch = function() {
+    Query.query = $scope.asyncSelected;
     if ($location.path() != '/') {
       $location.path('/');
     }
-    Query.query = $scope.asyncSelected;
-    $scope.asyncSelected = '';
   }
 
+  // Go to createList view
   $scope.navigateToCreate = function () {
     $location.path('/createList');
   }

@@ -20,7 +20,10 @@ def full_text_search(query, page_no):
         results = map(dict, cur.fetchall())
     else:
         results = []
+        # Use id_set to ensure no lists are duplicated in results
         id_set = set()
+        # One query for titles starting with query and one for titles containing
+        # query in any form
         search_rows(results, id_set, query + '%', config.ROWS_PER_PAGE, offset)
         search_rows(results, id_set, '%' + query + '%', config.ROWS_PER_PAGE, offset)
 
@@ -39,6 +42,8 @@ def search_rows(results, id_set, query, limit, offset):
 def full_title_search(query):
     results = []
     id_set = set()
+    # One query for titles starting with query and one for titles containing
+    # query in any form
     search_titles(results, id_set, query + '%')
     search_titles(results, id_set, '%' + query + '%')
 
@@ -56,6 +61,42 @@ def search_titles(results, id_set, query):
 def check_duplicates(results, id_set):
     for result in cur.fetchall():
         result_dict = dict(result)
+        # If not a duplicate, add to results
+        # and update id_set
         if result_dict['id'] not in id_set:
             results.append(result_dict)
             id_set.add(result_dict['id'])
+
+def set_cookie(list_ID, userRating, ratingDict):
+    is_new_rating = True
+    cookie = json.loads(request.cookies.get('ratings', "{}"))
+
+    if (request.cookies.get('ratings')) is None:
+        is_new_rating = True
+    else:
+        if list_ID in cookie:
+            is_new_rating = False
+        else:
+            is_new_rating = True
+
+    if is_new_rating:
+        # First time user is rating this list
+        newNumRatings = ratingDict['num_ratings'] + 1
+        newRating = (ratingDict['rating'] * ratingDict['num_ratings'] + userRating) / newNumRatings
+    else:
+        # User is updating his rating
+        newNumRatings = ratingDict['num_ratings']
+        newRating = (ratingDict['rating'] * ratingDict['num_ratings'] - cookie[list_ID] + userRating) / newNumRatings
+
+    cur.execute('UPDATE spoiler_lists SET rating=%s, num_ratings=%s WHERE id=%s', (newRating, newNumRatings, list_ID))
+    conn.commit()
+
+    response = jsonify(newRating = newRating)
+    # Set a large expire date to prevent users from
+    # simply closing browser and opening it back up
+    expire_date = datetime.now() + timedelta(weeks=100)
+    # Update cookie to reflect the new userRating
+    cookie[list_ID] = userRating
+    response.set_cookie('ratings', json.dumps(cookie), expires=expire_date)
+
+    return response
