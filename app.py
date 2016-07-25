@@ -5,8 +5,10 @@ import os
 from helper import full_text_search, full_title_search
 from db_connector import conn, cur
 import config
+from flask.ext.compress import Compress
 
 app = Flask(__name__)
+Compress(app)
 
 @app.route('/')
 def index():
