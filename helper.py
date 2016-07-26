@@ -1,6 +1,9 @@
-from db_connector import cur
 import config
 import json
+from flask import request, jsonify
+from datetime import datetime, timedelta
+from db_connector import conn, cur
+
 
 def full_text_search(query, page_no):
     offset = (page_no - 1) * config.ROWS_PER_PAGE
@@ -39,6 +42,7 @@ def search_rows(results, id_set, query, limit, offset):
 
     check_duplicates(results, id_set)
 
+
 def full_title_search(query):
     results = []
     id_set = set()
@@ -49,6 +53,7 @@ def full_title_search(query):
 
     return map(lambda x: x['title'], results)
 
+
 # Return titles matching a query for autocomplete query
 def search_titles(results, id_set, query):
     cur.execute(
@@ -58,6 +63,7 @@ def search_titles(results, id_set, query):
 
     check_duplicates(results, id_set)
 
+
 def check_duplicates(results, id_set):
     for result in cur.fetchall():
         result_dict = dict(result)
@@ -66,6 +72,7 @@ def check_duplicates(results, id_set):
         if result_dict['id'] not in id_set:
             results.append(result_dict)
             id_set.add(result_dict['id'])
+
 
 def set_cookie(list_ID, userRating, ratingDict):
     is_new_rating = True
@@ -91,7 +98,7 @@ def set_cookie(list_ID, userRating, ratingDict):
     cur.execute('UPDATE spoiler_lists SET rating=%s, num_ratings=%s WHERE id=%s', (newRating, newNumRatings, list_ID))
     conn.commit()
 
-    response = jsonify(newRating = newRating)
+    response = jsonify(newRating=newRating)
     # Set a large expire date to prevent users from
     # simply closing browser and opening it back up
     expire_date = datetime.now() + timedelta(weeks=100)
