@@ -1,6 +1,6 @@
 from db_connector import cur
 import config
-
+import json
 
 def full_text_search(query, page_no):
     offset = (page_no - 1) * config.ROWS_PER_PAGE
