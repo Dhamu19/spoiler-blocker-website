@@ -11,11 +11,11 @@
     </div>
     <div class="collapse navbar-collapse">
       <ul class="nav navbar-nav">
-        <li id="nav_home"><a href="#/">Home</a></li>
+        <li id="nav_home"><a href="#/" ng-click="allLists()">Home</a></li>
       </ul>
       <form class="navbar-form navbar-right" role="search">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search"
+          <input type="text" class="form-control" placeholder="Search" typeahead-no-results="noResults"
            uib-typeahead="title for title in getTitles($viewValue)" ng-model="asyncSelected">
         </div>
         <button type="submit" class="btn btn-default" ng-click="submitSearch()">Submit</button>

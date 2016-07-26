@@ -100,7 +100,7 @@ app.controller('BrowseController', function($scope, $http, Query, $window) {
   // Watch for changes in query, if changes then
   // Get lists for query and change pagination page to 1
   $scope.$watch(function () { return Query.query; }, function (newValue, oldValue) {
-    if (newValue) {
+    if (newValue || newValue == '') {
       $scope.currentPage = 1;
       $scope.getLists();
     }
@@ -138,6 +138,7 @@ app.controller('CreateController', function($scope, $http, $timeout) {
 
 app.controller('NavController', function($scope, $http, Query, $location) {
   $scope.asyncSelected = undefined;
+  $scope.noResults = true;
 
   // Get titles of lists that match the query
   // These titles are used in the autocomplete
@@ -166,5 +167,10 @@ app.controller('NavController', function($scope, $http, Query, $location) {
   // Go to createList view
   $scope.navigateToCreate = function () {
     $location.path('/createList');
+  }
+
+  $scope.allLists = function () {
+    Query.query = '';
+    $scope.asyncSelected = '';
   }
 })

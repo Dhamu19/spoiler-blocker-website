@@ -31,7 +31,11 @@ def getLists():
 @app.route('/getTitles', methods=['POST'])
 def getTitles():
     data = json.loads(request.data.decode())
-    return json.dumps(full_title_search(data['query']))
+    results = full_title_search(data['query'])
+    if len(results) == 0:
+        return json.dumps(['No results found'])
+    else:
+        return json.dumps(results)
 
 @app.route('/postsPerPage', methods=['GET'])
 def postsPerPage():
