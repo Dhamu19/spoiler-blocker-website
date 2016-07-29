@@ -2,22 +2,23 @@ import config
 import json
 from flask import request, jsonify
 from datetime import datetime, timedelta
-from db_connector import conn, cur
 
 
-def full_text_search(query, page_no):
+def full_text_search(query, page_no, cur):
     offset = (page_no - 1) * config.ROWS_PER_PAGE
 
     count = -1
     if page_no == 1:
-        cur.execute("SELECT COUNT(*) FROM spoiler_lists WHERE (title ILIKE %s)",
+        cur.execute(
+            "SELECT COUNT(*) FROM spoiler_lists WHERE (title ILIKE %s)",
             ('%' + query + '%',)
         )
         count = cur.fetchone()['count']
 
     # If empty query, return all rows
     if query == '':
-        cur.execute("SELECT id, title, tags, rating, num_downloads FROM spoiler_lists ORDER BY rating LIMIT %s OFFSET %s",
+        cur.execute(
+            "SELECT id, title, tags, rating, num_downloads FROM spoiler_lists ORDER BY rating LIMIT %s OFFSET %s",
             (config.ROWS_PER_PAGE, offset)
         )
         results = map(dict, cur.fetchall())
@@ -27,44 +28,44 @@ def full_text_search(query, page_no):
         id_set = set()
         # One query for titles starting with query and one for titles containing
         # query in any form
-        search_rows(results, id_set, query + '%', config.ROWS_PER_PAGE, offset)
-        search_rows(results, id_set, '%' + query + '%', config.ROWS_PER_PAGE, offset)
+        search_rows(results, id_set, query + '%', config.ROWS_PER_PAGE, offset, cur)
+        search_rows(results, id_set, '%' + query + '%', config.ROWS_PER_PAGE, offset, cur)
 
     return results, count
 
 
 # Return row data matching a query for populating a page with results
-def search_rows(results, id_set, query, limit, offset):
+def search_rows(results, id_set, query, limit, offset, cur):
     cur.execute(
         "SELECT id, title, tags, rating, num_downloads FROM spoiler_lists WHERE (title ILIKE %s) ORDER BY rating LIMIT %s OFFSET %s",
         (query, limit, offset)
     )
 
-    check_duplicates(results, id_set)
+    check_duplicates(results, id_set, cur)
 
 
-def full_title_search(query):
+def full_title_search(query, cur):
     results = []
     id_set = set()
     # One query for titles starting with query and one for titles containing
     # query in any form
-    search_titles(results, id_set, query + '%')
-    search_titles(results, id_set, '%' + query + '%')
+    search_titles(results, id_set, query + '%', cur)
+    search_titles(results, id_set, '%' + query + '%', cur)
 
     return map(lambda x: x['title'], results)
 
 
 # Return titles matching a query for autocomplete query
-def search_titles(results, id_set, query):
+def search_titles(results, id_set, query, cur):
     cur.execute(
         "SELECT title, id FROM spoiler_lists WHERE (title ILIKE %s) LIMIT %s",
         (query, config.AUTCOMPLETE_MAX_ROWS)
     )
 
-    check_duplicates(results, id_set)
+    check_duplicates(results, id_set, cur)
 
 
-def check_duplicates(results, id_set):
+def check_duplicates(results, id_set, cur):
     for result in cur.fetchall():
         result_dict = dict(result)
         # If not a duplicate, add to results
@@ -74,7 +75,7 @@ def check_duplicates(results, id_set):
             id_set.add(result_dict['id'])
 
 
-def set_cookie(list_ID, userRating, ratingDict):
+def set_cookie(list_ID, userRating, ratingDict, conn, cur):
     is_new_rating = True
     cookie = json.loads(request.cookies.get('ratings', "{}"))
 
@@ -95,7 +96,10 @@ def set_cookie(list_ID, userRating, ratingDict):
         newNumRatings = ratingDict['num_ratings']
         newRating = (ratingDict['rating'] * ratingDict['num_ratings'] - cookie[list_ID] + userRating) / newNumRatings
 
-    cur.execute('UPDATE spoiler_lists SET rating=%s, num_ratings=%s WHERE id=%s', (newRating, newNumRatings, list_ID))
+    cur.execute(
+        'UPDATE spoiler_lists SET rating=%s, num_ratings=%s WHERE id=%s',
+        (newRating, newNumRatings, list_ID)
+    )
     conn.commit()
 
     response = jsonify(newRating=newRating)

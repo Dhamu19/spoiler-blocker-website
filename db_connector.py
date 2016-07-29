@@ -7,12 +7,16 @@ import os
 urlparse.uses_netloc.append("postgres")
 url = urlparse.urlparse(os.environ["DATABASE_URL"])
 
-conn = psycopg2.connect(
-    database=url.path[1:],
-    user=url.username,
-    password=url.password,
-    host=url.hostname,
-    port=url.port
-)
 
-cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+def db_connection():
+    return psycopg2.connect(
+        database=url.path[1:],
+        user=url.username,
+        password=url.password,
+        host=url.hostname,
+        port=url.port
+    )
+
+
+def db_cursor(conn):
+    return conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
