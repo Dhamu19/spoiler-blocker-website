@@ -18,7 +18,7 @@ def full_text_search(query, page_no, cur):
     # If empty query, return all rows
     if query == '':
         cur.execute(
-            "SELECT id, title, tags, rating, num_downloads FROM spoiler_lists ORDER BY rating LIMIT %s OFFSET %s",
+            "SELECT id, title, tags, rating, num_downloads FROM spoiler_lists ORDER BY rating DESC LIMIT %s OFFSET %s",
             (config.ROWS_PER_PAGE, offset)
         )
         results = map(dict, cur.fetchall())
@@ -37,7 +37,7 @@ def full_text_search(query, page_no, cur):
 # Return row data matching a query for populating a page with results
 def search_rows(results, id_set, query, limit, offset, cur):
     cur.execute(
-        "SELECT id, title, tags, rating, num_downloads FROM spoiler_lists WHERE (title ILIKE %s) ORDER BY rating LIMIT %s OFFSET %s",
+        "SELECT id, title, tags, rating, num_downloads FROM spoiler_lists WHERE (title ILIKE %s) ORDER BY rating DESC LIMIT %s OFFSET %s",
         (query, limit, offset)
     )
 
