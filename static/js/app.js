@@ -30,7 +30,7 @@ app.factory('Query', function($http){
 
 app.controller('BrowseController', function($scope, $http, Query, $window) {
   $scope.round = $window.Math.round;
-  $scope.lists = {};
+  $scope.lists = [];
   $scope.numLists = null;
   $scope.currentPage = 1;
   $scope.postsPerPage = null;
@@ -59,29 +59,17 @@ app.controller('BrowseController', function($scope, $http, Query, $window) {
       headers: {'Content-Type': 'json'}
     }).then(function(response) {
       // response.data is array of json objects
-      var listObj = {};
-      var result = response.data.result;
-
-      // If page num is 1, then count will not be -1
-      // If count isn't -1, then update it in the scope
-      if (response.data.count != -1) {
-        $scope.numLists = response.data.count;
-      }
-
-      // Transform list of objects into an object keyed
-      // by list ID. Makes list updates faster
-      for (var i=0; i<result.length; i++) {
-        var id = result[i]['id'];
-        listObj[id] = result[i];
-      }
-
-      $scope.lists = listObj;
+      $scope.lists = response.data.result;
 		});
 	};
 
   $scope.rateList = function(listID, rating) {
     // To make stars persist
-    $scope.lists[listID].user_rating_from_cookie = rating;
+    for (var i = 0; i < $scope.lists.length; i++){
+      if ($scope.lists[i]['id'] == listID) {
+        $scope.lists[i].user_rating_from_cookie = rating;
+      }
+    }
 
     $http({
       method: 'POST',
@@ -93,7 +81,11 @@ app.controller('BrowseController', function($scope, $http, Query, $window) {
       headers: {'Content-Type': 'json'}
     }).then(function(response) {
       // Update rating in view
-      $scope.lists[listID].rating = response.data.newRating;
+      for (var i = 0; i < $scope.lists.length; i++){
+        if ($scope.lists[i]['id'] == listID) {
+          $scope.lists[i].rating = response.data.newRating;
+        }
+      }
     })
   }
 
