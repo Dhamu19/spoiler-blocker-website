@@ -59,6 +59,9 @@ app.controller('BrowseController', function($scope, $http, Query, $window) {
       headers: {'Content-Type': 'json'}
     }).then(function(response) {
       // response.data is array of json objects
+      if (response.data.count != -1) {
+        $scope.numLists = response.data.count;
+      }
       $scope.lists = response.data.result;
 		});
 	};
